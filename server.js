@@ -18,6 +18,7 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE"]
 }))
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(express.json())
 app.use(cookieParser())
 
 
