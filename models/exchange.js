@@ -5,10 +5,12 @@ const exchangeSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    baseCurrencyValInUSD:{
+    baseCurrencyValInUSD: {
         type: Number,
         required: true
     }
-},{
+}, {
     timestamps: true
 })
+
+module.exports = mongoose.model("exchanges", exchangeSchema, "exchanges")

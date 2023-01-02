@@ -30,7 +30,20 @@ const orderSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'open',
-        enum: ['open', 'close']
+        enum: ['open', 'close', 'unplaced']
+    },
+    limitPrice: {
+        type: Number,
+        default: 0
+    },
+    stopPrice: {
+        type: Number,
+        default: 0
+    },
+    userId: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: 'users'
     }
 }, {
     timestamps: true

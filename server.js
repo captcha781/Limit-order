@@ -6,11 +6,15 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
 const morgan = require('morgan')
+const passport = require('passport')
+
 
 const mainRoutes = require("./routes/index")
+const limitRoutes = require("./routes/limits")
 
 
 const app = express()
+
 
 app.use(morgan("dev"))
 app.use(cors({
@@ -21,10 +25,11 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(cookieParser())
 
-
+app.use(passport.initialize())
+require('./authentication/passport').users(passport);
 
 app.use("/", mainRoutes)
-
+app.use("/exchange", limitRoutes)
 
 
 mongoose.set("strictQuery", false)

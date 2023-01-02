@@ -9,9 +9,14 @@ const assetSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    assetprice: {
+    assetPrice: {
         type: Number,
         required: true
+    },
+    assetPriceCurrency: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: "exchanges"
     },
 }, {
     timestamps: true
