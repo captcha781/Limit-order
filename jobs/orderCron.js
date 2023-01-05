@@ -8,8 +8,8 @@ module.exports = () => {
         console.log("Updater cron");
         let asset = await assetModel.findOne({ symbol: "BNB" })
         let spotPrice = asset.assetPrice
-        let updater = await orderModel.updateMany({ type: "buy", status: 'unplaced', requestedPrice: { $lte: spotPrice } }, { $set: { status: 'open' } })
-        let sellupdate = await orderModel.updateMany({ type: "sell", status: 'unplaced', requestedPrice: { $gte: spotPrice } }, { $set: { status: 'open' } })
+        let updater = await orderModel.updateMany({ orderType: "limit", type: "buy", status: 'unplaced', requestedPrice: { $lte: spotPrice } }, { $set: { status: 'open' } })
+        let sellupdate = await orderModel.updateMany({ orderType: "limit", type: "sell", status: 'unplaced', requestedPrice: { $gte: spotPrice } }, { $set: { status: 'open' } })
         // console.log(updater, sellupdate);
     })
 }
