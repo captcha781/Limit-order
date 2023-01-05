@@ -5,6 +5,7 @@ const orderModel = require("../models/orderbook")
 const getSpotPrice = require("../utils/getSpotPrice");
 const findStatus = require("../utils/findStatus");
 const USDTconversion = require("../utils/usdtConversion");
+const USDTstopPrice = require("../utils/usdtStopPrice");
 
 exports.getBase = expressAsyncHandler(async (req, res) => {
     try {
@@ -50,6 +51,34 @@ exports.makeRequest = expressAsyncHandler(async (req, res) => {
                 userId: req.user._id
             })
             return res.json({ success: true, message: "Your order was received successfully" })
+        } else if (body.orderType === "market") {
+            const createOrder = await orderModel.create({
+                exchangeType: body.exchangeType,
+                tradedFor: body.for,
+                type: body.type,
+                orderType: 'market',
+                value: body.value,
+                status: "open",
+                requestedPrice: spotPrice,
+                userId: req.user._id
+            })
+            return res.json({ success: true, message: "Your order was received successfully" })
+        } else if (body.orderType === "stop-limit") {
+            if (!body.exchangeType.endsWith("USDT")) {
+                body.stop = await USDTstopPrice(body)
+            }
+            const createOrder = await orderModel.create({
+                exchangeType: body.exchangeType,
+                tradedFor: body.for,
+                type: body.type,
+                orderType: 'stop-limit',
+                value: body.value,
+                status: body.stop === spotPrice ? "open" : "unplaced",
+                requestedPrice: body.limitPrice,
+                stopPrice: body.stop,
+                userId: req.user._id
+            })
+            return res.json({ success: true, message: "Your order was received successfully", type: "stop-limit" })
         }
 
     } catch (error) {

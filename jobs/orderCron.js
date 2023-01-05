@@ -10,6 +10,6 @@ module.exports = () => {
         let spotPrice = asset.assetPrice
         let updater = await orderModel.updateMany({ orderType: "limit", type: "buy", status: 'unplaced', requestedPrice: { $lte: spotPrice } }, { $set: { status: 'open' } })
         let sellupdate = await orderModel.updateMany({ orderType: "limit", type: "sell", status: 'unplaced', requestedPrice: { $gte: spotPrice } }, { $set: { status: 'open' } })
-        // console.log(updater, sellupdate);
+        let stoplimit = await orderModel.updateMany({ orderType: "stop-limit", status: 'unplaced', stopPrice: spotPrice }, { $set: { status: 'open' } })
     })
 }

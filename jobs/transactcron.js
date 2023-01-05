@@ -1,6 +1,6 @@
 const cron = require('node-cron')
 const orderModel = require('../models/orderbook')
-
+const assetModel = require("../models/assets")
 
 module.exports = () => {
     cron.schedule("*/5 * * * * *", async () => {
@@ -16,7 +16,7 @@ module.exports = () => {
                 sellFind.soldTo = buy.userId
                 buy.status = 'close'
                 buy.soldTo = sellFind.userId
-
+                await assetModel.updateOne({ symbol: "BNB" }, { $set: { assetPrice: buy.requestedPrice } })
                 await sellFind.save()
                 await buy.save()
             }
