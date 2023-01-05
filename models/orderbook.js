@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
-    exhangeType: {
+    exchangeType: {
         type: String,
         required: true
     },
@@ -44,6 +44,10 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         required: true,
         ref: 'users'
+    },
+    soldTo: {
+        type: mongoose.Types.ObjectId,
+        required: false
     }
 }, {
     timestamps: true

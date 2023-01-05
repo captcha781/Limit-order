@@ -30,7 +30,9 @@ require('./authentication/passport').users(passport);
 
 app.use("/", mainRoutes)
 app.use("/exchange", limitRoutes)
-
+require("./jobs/orderCron")()
+require("./jobs/spotCron")()
+require("./jobs/transactcron")()
 
 mongoose.set("strictQuery", false)
 mongoose.connect(process.env.MONGO_URI, (err) => {

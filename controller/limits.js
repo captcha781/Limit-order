@@ -4,6 +4,7 @@ const assetModel = require("../models/assets");
 const orderModel = require("../models/orderbook")
 const getSpotPrice = require("../utils/getSpotPrice");
 const findStatus = require("../utils/findStatus");
+const USDTconversion = require("../utils/usdtConversion");
 
 exports.getBase = expressAsyncHandler(async (req, res) => {
     try {
@@ -17,64 +18,40 @@ exports.getBase = expressAsyncHandler(async (req, res) => {
     }
 })
 
-exports.makeRequest = expressAsyncHandler(async (req, res) => {
+exports.getAssets = expressAsyncHandler(async (req, res) => {
     try {
-
-        const body = req.body
-        let spotPrice = await getSpotPrice(body.for)
-        let base = await exchangeModel.findOne({})
-
-        let findMatch = await orderModel.findOne({
-            type: body.type === "sell" ? "buy" : "sell",
-            orderType: body.orderType,
-            value: body.value,
-            requestedPrice: body.requestedPrice,
-            status: "open",
-            userId: { $ne: req.user._id }
-        })
-
-        if (!findMatch) {
-            if (body.type === "buy") {
-                let pup = body.requestedPrice;
-                if (!body.exchangeType.endsWith(base.baseCurrency)) {
-                    let bytype = body.exchangeType.replace(body.for, "")
-                    let getByTypePrice = await assetModel.findOne({ symbol: bytype })
-                    if (!getByTypePrice) {
-                        return res.status(400).json({ success: false, message: "The requested Exchange method is not available" })
-                    }
-                    pup = getByTypePrice.assetPrice * body.requestedPrice
-                }
-                const statusFinder = findStatus(body, spotPrice)
-                let createOrder = await orderModel.create({
-                    exhangeType: body.exchangeType,
-                    tradedFor: body.for,
-                    type: body.type,
-                    orderType: body.orderType,
-                    value: body.value,
-                    requestedPrice: pup,
-                    status: statusFinder,
-                    limitPrice: body.orderType !== "market" ? body.limit : 0,
-                    stopPrice: body.orderType === "stop-limit" ? body.stop : 0,
-                    userId: req.user._id
-                })
-                return res.json({ success: true, message: `Your order of ${body.type} for ${body.value} ${body.for} is successfully placed!`, result: createOrder })
-            } else {
-
-            }
-        } else {
-            
-        }
-
+        let assets = await assetModel.find({})
+        return res.json({ success: true, assets })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: 'Something went wrong' })
     }
 })
 
-exports.getAssets = expressAsyncHandler(async (req, res) => {
+exports.makeRequest = expressAsyncHandler(async (req, res) => {
     try {
-        let assets = await assetModel.find({})
-        return res.json({ success: true, assets })
+
+        const body = req.body
+        const asset = await assetModel.findOne({ symbol: body.for })
+        const spotPrice = asset.assetPrice
+        if (!body.exchangeType.endsWith("USDT")) {
+            body.limitPrice = await USDTconversion(body)
+        }
+
+        if (body.orderType === "limit") {
+            const createOrder = await orderModel.create({
+                exchangeType: body.exchangeType,
+                tradedFor: body.for,
+                type: body.type,
+                orderType: 'limit',
+                value: body.value,
+                status: body.type === "sell" ? (body.limitPrice >= spotPrice ? 'open' : 'unplaced') : (body.limitPrice <= spotPrice ? 'open' : 'unplaced'),
+                requestedPrice: body.limitPrice,
+                userId: req.user._id
+            })
+            return res.json({ success: true, message: "Your order was received successfully" })
+        }
+
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: 'Something went wrong' })
