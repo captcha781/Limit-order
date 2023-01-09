@@ -48,6 +48,10 @@ const orderSchema = new mongoose.Schema({
     soldTo: {
         type: mongoose.Types.ObjectId,
         required: false
+    },
+    soldPrice: {
+        type: Number,
+        required: false
     }
 }, {
     timestamps: true

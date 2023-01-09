@@ -46,7 +46,7 @@ exports.makeRequest = expressAsyncHandler(async (req, res) => {
                 type: body.type,
                 orderType: 'limit',
                 value: body.value,
-                status: body.type === "sell" ? (body.limitPrice >= spotPrice ? 'open' : 'unplaced') : (body.limitPrice <= spotPrice ? 'open' : 'unplaced'),
+                status: 'open',
                 requestedPrice: body.limitPrice,
                 userId: req.user._id
             })
