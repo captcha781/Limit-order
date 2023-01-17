@@ -10,6 +10,6 @@ module.exports = () => {
         //     await assetModel.findOneAndUpdate({ symbol: "BNB" }, { $set: { assetPrice: asset.assetPrice + Number(sign + upPrice) } })
         //     await graphModel.create({symbol: "BNB", price: asset.assetPrice + Number(sign + upPrice)})
         // console.log("spot price cron", "Price: ",asset.assetPrice + Number(sign + upPrice));
-        console.log("Spot price : " + asset.assetPrice);
+        // console.log("Spot price : " + asset.assetPrice);
     })
 }
