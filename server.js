@@ -33,6 +33,7 @@ app.use("/exchange", limitRoutes)
 require("./jobs/orderCron")()
 require("./jobs/spotCron")()
 require("./jobs/transactcron")()
+require('./config/Web3Contract')()
 
 mongoose.set("strictQuery", false)
 mongoose.connect(process.env.MONGO_URI, (err) => {

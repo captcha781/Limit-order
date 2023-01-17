@@ -5,7 +5,7 @@ const assetModel = require('../models/assets')
 
 module.exports = () => {
     cron.schedule("*/5 * * * * *", async () => {
-        console.log("Updater cron");
+        // console.log("Updater cron");
         let asset = await assetModel.findOne({ symbol: "BNB" })
         let spotPrice = asset.assetPrice
         // let updater = await orderModel.updateMany({ orderType: "limit", type: "buy", status: 'unplaced', requestedPrice: { $gte: spotPrice } }, { $set: { status: 'open' } })

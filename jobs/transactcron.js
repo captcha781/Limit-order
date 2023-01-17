@@ -24,7 +24,7 @@ module.exports = () => {
             }
         })
 
-        console.log("Transact cron");
+        // console.log("Transact cron");
     })
 }
 
