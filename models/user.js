@@ -25,6 +25,18 @@ const Schema = new mongoose.Schema({
         type: Date,
         default: ""
     },
+    address: {
+        type: String,
+        default: ""
+    },
+    privateKey: {
+        type: Object,
+        default: {}
+    },
+    walletId: {
+        type: String,
+        default: ""
+    }
 }, {
     timestamps: true
 })

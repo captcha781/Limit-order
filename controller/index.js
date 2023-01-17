@@ -2,6 +2,10 @@ const expressAsyncHandler = require('express-async-handler')
 const userModel = require('../models/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const createWallet = require('../utils/createWallet')
+const wallet = require('../models/wallet')
+const { encrypt } = require('../utils/cryptos')
+const makeWalletNum = require('../utils/makeWalletNum')
 
 
 exports.signup = expressAsyncHandler(async (req, res) => {
@@ -23,16 +27,43 @@ exports.signup = expressAsyncHandler(async (req, res) => {
         console.log(body);
         const passSalt = await bcrypt.genSalt(Number(process.env.SALTER))
         const passwordHash = await bcrypt.hash(body.password, passSalt)
+
+        const account = await createWallet()
+
+        const ourWallet = await wallet.create({
+            walletId: Math.random().toString(10).slice(2),
+            walletAddress: account.address,
+            assets: [
+                {
+                    name: "Binance",
+                    symbol: "BNB",
+                    network: "Binance Testnet",
+                    balance: 0
+                },
+                {
+                    name: "Binance USDT",
+                    symbol: "USDT",
+                    network: "Binance Testnet",
+                    balance: 0
+                }
+            ]
+        })
+
         const result = await userModel.create({
             name: body.name,
             username: body.username,
             email: body.email,
             password: passwordHash,
             salt: passSalt,
-            username: body.username
+            username: body.username,
+            address: account.address,
+            privateKey: encrypt(account.privateKey),
+            walletId: ourWallet.walletId
         })
+
         result.password = ""
         result.salt = ""
+        result.privateKey = ""
         return res.json({ success: true, message: "Account created successfully", user: result })
 
     } catch (error) {
