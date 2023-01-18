@@ -11,7 +11,7 @@ const _contractInstance = async () => {
         })
         .on('data', (result) => {
             console.log("Transfer detected");
-            updateDeposit(result.returnValues.from, result.returnValues.to, web3.utils.fromWei(result.returnValues.value, 'ether', result.transactionHash),result.transactionHash, 'USDT')
+            // updateDeposit(result.returnValues.from, result.returnValues.to, web3.utils.fromWei(result.returnValues.value, 'ether', result.transactionHash),result.transactionHash, 'USDT')
         })
 }
 

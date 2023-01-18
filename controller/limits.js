@@ -7,6 +7,8 @@ const findStatus = require("../utils/findStatus");
 const USDTconversion = require("../utils/usdtConversion");
 const USDTstopPrice = require("../utils/usdtStopPrice");
 const transferToAdmin = require("../utils/transferToAdmin");
+const transferCoins = require("../utils/transferCoins");
+const { decrypt } = require("../utils/cryptos");
 
 exports.getBase = expressAsyncHandler(async (req, res) => {
     try {
@@ -42,6 +44,14 @@ exports.makeRequest = expressAsyncHandler(async (req, res) => {
 
         if (body.type === "buy") {
             let { status, message } = await transferToAdmin(body.limitPrice * body.value, req.user.address)
+
+            if (!status) {
+                return res.status(400).json({ success: false, message: message })
+            }
+        }
+
+        if (body.type === "sell") {
+            let { status, message } = await transferCoins(req.user.address, process.env.SERVER_ADDRESS, body.value, decrypt(req.user.privateKey), 'server-deposit')
 
             if (!status) {
                 return res.status(400).json({ success: false, message: message })
