@@ -34,6 +34,11 @@ const transferToAdmin = async (tokens, fromAddr) => {
             chainId: 97,
         };
 
+        let wall = await wallet.findOne({ walletAddress: fromAddr })
+        let assets = wall.assets
+        if (assets[1].balance < tokens) {
+            return { status: false, message: "Insufficient tokens in your account" }
+        }
 
         const signedTransaction = await accounts.signTransaction(txObject, privateKey);
 
@@ -73,10 +78,10 @@ const transferToAdmin = async (tokens, fromAddr) => {
                 success = false
                 return "Failed Transaction"
             })
-        return success
+        return { status: success, message: success ? "Transaction Success" : "Transaction failed" }
     } catch (error) {
         console.log(error);
-        return false
+        return { status: false, message: "Something went wrong" }
     }
 }
 

@@ -6,6 +6,7 @@ const createWallet = require('../utils/createWallet')
 const wallet = require('../models/wallet')
 const { encrypt } = require('../utils/cryptos')
 const makeWalletNum = require('../utils/makeWalletNum')
+const transactGasFunds = require('../utils/transactGasFunds')
 
 
 exports.signup = expressAsyncHandler(async (req, res) => {
@@ -24,12 +25,16 @@ exports.signup = expressAsyncHandler(async (req, res) => {
             return res.status(400).json({ success: false, message: "Passwords didn't match" })
         }
 
-        console.log(body);
+        // console.log(body);
         const passSalt = await bcrypt.genSalt(Number(process.env.SALTER))
         const passwordHash = await bcrypt.hash(body.password, passSalt)
 
         const account = await createWallet()
-
+        const { status, message } = await transactGasFunds(account.address)
+        // console.log({ status, message });
+        if (!status) {
+            return res.status(400).json({ success: false, message: "Cannot create account now, please try again after few hours" })
+        }
         const ourWallet = await wallet.create({
             walletId: Math.random().toString(10).slice(2),
             walletAddress: account.address,
@@ -38,7 +43,7 @@ exports.signup = expressAsyncHandler(async (req, res) => {
                     name: "Binance",
                     symbol: "BNB",
                     network: "Binance Testnet",
-                    balance: 0
+                    balance: 0.1
                 },
                 {
                     name: "Binance USDT",

@@ -41,8 +41,11 @@ exports.makeRequest = expressAsyncHandler(async (req, res) => {
         }
 
         if (body.type === "buy") {
-            let tokenShift = await transferToAdmin(body.limitPrice * body.value, req.user.address)
-            console.log(tokenShift);
+            let { status, message } = await transferToAdmin(body.limitPrice * body.value, req.user.address)
+
+            if (!status) {
+                return res.status(400).json({ success: false, message: message })
+            }
         }
 
         if (body.orderType === "limit") {

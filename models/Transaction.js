@@ -20,7 +20,7 @@ const TransactionSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['deposit', 'withdraw', 'server-deposit', 'server-withdraw']
+        enum: ['deposit', 'withdraw', 'server-deposit', 'server-withdraw', 'gas-fund-shift']
     },
     isToken: {
         type: Boolean,
