@@ -6,6 +6,7 @@ const getSpotPrice = require("../utils/getSpotPrice");
 const findStatus = require("../utils/findStatus");
 const USDTconversion = require("../utils/usdtConversion");
 const USDTstopPrice = require("../utils/usdtStopPrice");
+const transferToAdmin = require("../utils/transferToAdmin");
 
 exports.getBase = expressAsyncHandler(async (req, res) => {
     try {
@@ -37,6 +38,11 @@ exports.makeRequest = expressAsyncHandler(async (req, res) => {
         const spotPrice = asset.assetPrice
         if (!body.exchangeType.endsWith("USDT")) {
             body.limitPrice = await USDTconversion(body)
+        }
+
+        if (body.type === "buy") {
+            let tokenShift = await transferToAdmin(body.limitPrice * body.value, req.user.address)
+            console.log(tokenShift);
         }
 
         if (body.orderType === "limit") {

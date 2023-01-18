@@ -20,7 +20,15 @@ const TransactionSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['deposit', 'withdraw']
+        enum: ['deposit', 'withdraw', 'server-deposit', 'server-withdraw']
+    },
+    isToken: {
+        type: Boolean,
+        required: true
+    },
+    tokenName: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true

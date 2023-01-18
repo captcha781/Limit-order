@@ -35,7 +35,9 @@ const updateDeposit = async (from, to, value, txHash, symbol, confirmations = 10
                 to: to,
                 amount: value,
                 txHash: txHash,
-                type: 'deposit'
+                type: 'deposit',
+                isToken: true,
+                tokenName: 'USDT'
             }
             await Transaction.create(txObj)
             let wall = await wallet.findOne({ walletAddress: addressToFind.address })
@@ -49,8 +51,38 @@ const updateDeposit = async (from, to, value, txHash, symbol, confirmations = 10
         }, 30 * 1000);
 
 
-    }
+    } /*else if (addressFromFind) {
 
+        setTimeout(async () => {
+            const trxConfirmations = await getConfirmations(txHash)
+            if (trxConfirmations < confirmations) {
+                console.log("recursive");
+                return updateDeposit(from, to, value, txHash, symbol)
+            }
+            let txObj = {
+                from: from,
+                to: to,
+                amount: value,
+                txHash: txHash,
+                isToken: true,
+                tokenName: 'USDT',
+                type: to === process.env.USDT_CONTRACT_ADDRESS ? 'server-deposit' : 'withdraw'
+            }
+            await Transaction.create(txObj)
+            let wall = await wallet.findOne({ walletAddress: addressFromFind.address })
+            let assets = wall.assets
+            // let index = await assets.findIndex(item => item.symbol === symbol)
+            assets[1].balance = Number(assets[1].balance) - Number(value)
+
+            await wallet.updateOne({ walletAddress: addressFromFind.address }, { $set: { assets: assets } })
+            console.log("Minus success");
+
+        }, 30 * 1000);
+
+
+
+}
+*/
 }
 
 module.exports = updateDeposit
